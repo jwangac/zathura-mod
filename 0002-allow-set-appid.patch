@@ -1,0 +1,15 @@
+--- a/zathura/zathura.c
++++ b/zathura/zathura.c
+@@ -429,7 +429,11 @@ zathura_init(zathura_t* zathura)
+   }
+ 
+   /* Set application ID */
+-  g_set_prgname("org.pwmt.zathura");
++  char* appid = getenv("ZATHURA_APPID");
++  if (appid == NULL || strlen(appid) == 0) {
++      appid = "org.pwmt.zathura";
++  }
++  g_set_prgname(appid);
+ 
+   /* load plugins */
+   if (zathura_plugin_manager_load(zathura->plugins.manager) == false) {

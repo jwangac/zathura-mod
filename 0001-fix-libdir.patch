@@ -1,0 +1,11 @@
+--- a/meson.build
++++ b/meson.build
+@@ -33,7 +33,7 @@ datadir = get_option('datadir')
+ metainfodir = join_paths(datadir, 'metainfo')
+ desktopdir = join_paths(datadir, 'applications')
+ dbusinterfacesdir = join_paths(datadir, 'dbus-1', 'interfaces')
+-plugindir = join_paths(get_option('libdir'), 'zathura')
++plugindir = join_paths('/usr/lib/x86_64-linux-gnu', 'zathura')
+ 
+ # required dependencies
+ libm = cc.find_library('m', required: false)

@@ -1,0 +1,15 @@
+--- a/zathura/zathura.c
++++ b/zathura/zathura.c
+@@ -1280,6 +1280,12 @@ document_open(zathura_t* zathura, const char* path, const char* uri, const char*
+   page_set(zathura, zathura_document_get_current_page_number(document));
+ 
+   /* Set position (only if restoring from history file) */
++  static int first_run = 1;
++  if (first_run) {
++    first_run = 0;
++    page_set(zathura, 0);
++    position_set(zathura, -1, 0);
++  } else
+   if (file_info.current_page == zathura_document_get_current_page_number(document) &&
+       (file_info.position_x != 0 || file_info.position_y != 0)) {
+     position_set(zathura, file_info.position_x, file_info.position_y);

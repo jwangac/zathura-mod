@@ -1,0 +1,47 @@
+--- a/zathura/shortcuts.c
++++ b/zathura/shortcuts.c
+@@ -483,10 +483,31 @@ sc_recolor(girara_session_t* session, girara_argument_t* UNUSED(argument),
+   return false;
+ }
+ 
++#include <pthread.h>
++#include <time.h>
++pthread_mutex_t reload_lock = PTHREAD_MUTEX_INITIALIZER;
++time_t reload_last_run_time = 0;
++
+ bool
+ sc_reload(girara_session_t* session, girara_argument_t* UNUSED(argument),
+           girara_event_t* UNUSED(event), unsigned int UNUSED(t))
+ {
++  pthread_mutex_lock(&reload_lock); // Acquire the lock
++  bool can_reload;
++  {
++    time_t current_time = time(NULL);
++    double seconds_since_last_run = difftime(current_time, reload_last_run_time);
++    if (seconds_since_last_run >= 0.01) {
++      reload_last_run_time = current_time; // Update the last run time
++      can_reload = true;
++    } else {
++      can_reload = false;
++    }
++  }
++  pthread_mutex_unlock(&reload_lock); // Release the lock
++  if (!can_reload)
++    return false;
++
+   g_return_val_if_fail(session != NULL, false);
+   g_return_val_if_fail(session->global.data != NULL, false);
+   zathura_t* zathura = session->global.data;
+
+--- a/zathura/zathura.c
++++ b/zathura/zathura.c
+@@ -1454,7 +1464,9 @@ document_close(zathura_t* zathura, bool keep_monitor)
+   }
+ 
+   /* stop rendering */
++  zathura_renderer_lock(zathura->sync.render_thread);
+   zathura_renderer_stop(zathura->sync.render_thread);
++  zathura_renderer_unlock(zathura->sync.render_thread);
+   g_clear_object(&zathura->window_icon_render_request);
+ 
+   /* remove monitor */
