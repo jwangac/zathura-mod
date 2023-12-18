@@ -1,0 +1,39 @@
+--- a/zathura/config.c
++++ b/zathura/config.c
+@@ -527,6 +527,7 @@ config_load_default(zathura_t* zathura)
+   girara_shortcut_mapping_add(gsession, "copy_link",           sc_copy_link);
+   girara_shortcut_mapping_add(gsession, "copy_filepath",       sc_copy_filepath);
+   girara_shortcut_mapping_add(gsession, "exec",                sc_exec);
++  girara_shortcut_mapping_add(gsession, "exec_and_quit",       sc_exec_and_quit);
+   girara_shortcut_mapping_add(gsession, "focus_inputbar",      sc_focus_inputbar);
+   girara_shortcut_mapping_add(gsession, "follow",              sc_follow);
+   girara_shortcut_mapping_add(gsession, "goto",                sc_goto);
+
+--- a/zathura/shortcuts.c
++++ b/zathura/shortcuts.c
+@@ -1542,6 +1542,14 @@ sc_exec(girara_session_t* session, girara_argument_t* argument, girara_event_t*
+   return girara_sc_exec(session, argument, event, t);
+ }
+ 
++bool
++sc_exec_and_quit(girara_session_t* session, girara_argument_t* argument, girara_event_t* event, unsigned int t)
++{
++  sc_exec(session, argument, event, t);
++  sc_quit(session, NULL, NULL, 0);
++  return false;
++}
++
+ bool
+ sc_nohlsearch(girara_session_t* session, girara_argument_t* UNUSED(argument), girara_event_t* UNUSED(event), unsigned int UNUSED(t))
+ {
+
+--- a/zathura/shortcuts.h
++++ b/zathura/shortcuts.h
+@@ -314,6 +314,7 @@ bool sc_zoom(girara_session_t* session, girara_argument_t* argument, girara_even
+  * @return true if no error occurred otherwise false
+  */
+ bool sc_exec(girara_session_t* session, girara_argument_t* argument, girara_event_t* event, unsigned int t);
++bool sc_exec_and_quit(girara_session_t* session, girara_argument_t* argument, girara_event_t* event, unsigned int t);
+ 
+ /**
+  * Remove search highlights.
