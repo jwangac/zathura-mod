@@ -1,0 +1,44 @@
+--- a/zathura/commands.c
++++ b/zathura/commands.c
+@@ -318,8 +318,18 @@ cmd_save(girara_session_t* session, girara_list_t* argument_list)
+     return false;
+   }
+ 
+-  if (girara_list_size(argument_list) == 1) {
+-    document_save(zathura, girara_list_nth(argument_list, 0), false);
++  if (girara_list_size(argument_list) >= 1) {
++    GString* merged_arguments = g_string_new(NULL);
++    for (size_t i = 0; i < girara_list_size(argument_list); ++i) {
++      if (i != 0) {
++        g_string_append_c(merged_arguments, ' ');
++      }
++      gchar* argument = girara_list_nth(argument_list, i);
++      gchar* sanitized_argument = g_strdelimit(argument, "\n", ' ');
++      g_string_append(merged_arguments, sanitized_argument);
++    }
++    document_save(zathura, merged_arguments->str, false);
++    g_string_free(merged_arguments, TRUE);
+   } else {
+     girara_notify(session, GIRARA_ERROR, _("Invalid number of arguments."));
+     return false;
+@@ -345,8 +355,18 @@ cmd_savef(girara_session_t* session, girara_list_t* argument_list)
+     return false;
+   }
+ 
+-  if (girara_list_size(argument_list) == 1) {
+-    document_save(zathura, girara_list_nth(argument_list, 0), true);
++  if (girara_list_size(argument_list) >= 1) {
++    GString* merged_arguments = g_string_new(NULL);
++    for (size_t i = 0; i < girara_list_size(argument_list); ++i) {
++      if (i != 0) {
++        g_string_append_c(merged_arguments, ' ');
++      }
++      gchar* argument = girara_list_nth(argument_list, i);
++      gchar* sanitized_argument = g_strdelimit(argument, "\n", ' ');
++      g_string_append(merged_arguments, sanitized_argument);
++    }
++    document_save(zathura, merged_arguments->str, false);
++    g_string_free(merged_arguments, TRUE);
+   } else {
+     girara_notify(session, GIRARA_ERROR, _("Invalid number of arguments."));
+     return false;
